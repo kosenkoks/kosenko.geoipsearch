@@ -3,6 +3,7 @@
 
 use Bitrix\Main\Localization\Loc;
 use Bitrix\Main\UI\Extension;
+use Bitrix\Main\Page\Asset;
 
 CJSCore::Init(['ajax', 'masked_input']);
 
@@ -14,13 +15,14 @@ Extension::load('ui.bootstrap4');
 
 $messages = Loc::loadLanguageFile(__FILE__);
 
+Asset::getInstance()->addJs('https://api-maps.yandex.ru/2.1/?apikey=e95f8762-4d63-49c0-94d2-bb06804ddd4e&lang=ru_RU');
 ?>
-<script src="https://api-maps.yandex.ru/2.1/?apikey=e95f8762-4d63-49c0-94d2-bb06804ddd4e&lang=ru_RU" type="text/javascript"></script>
+
 <div class="container gy-2">
     <div class="row ">
         <div class="col-md-4">
             <div class="ui-ctl ui-ctl-textbox ui-ctl-inline">
-                <input type="text" class="ui-ctl-element" id="ipadress">
+                <input type="text" class="ui-ctl-element" id="ipadress" placeholder="xxx.xxx.xxx.xxx">
             </div>
         </div>
         <div class="col-md-2">
@@ -29,7 +31,7 @@ $messages = Loc::loadLanguageFile(__FILE__);
     </div>
 </div>
 
-<div class="container gy-4">
+<div class="container gy-4 result-body" style="display:none">
     <div class="row">
         <div class="col-md-7">
             <table class="result-table table">
@@ -57,9 +59,12 @@ $messages = Loc::loadLanguageFile(__FILE__);
                 </tbody>
             </table>
         </div>
-        <div class="col-md-5">
-        <div id="map" style="width: 100%; height: 100%;">
-        </div>
+
+    </div>
+    <div class="row" style="height: 400px; width: 100%;">
+        <div class="col-md-12">
+            <div id="map" style="width: 100%; height: 100%;">
+            </div>
     </div>
 </div>
 

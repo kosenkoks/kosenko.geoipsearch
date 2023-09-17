@@ -39,19 +39,20 @@ class GeoIPSearch extends CBitrixComponent implements Controllerable, Errorable
      * @param $request
      * @return mixed|void
      */
-    public function searchAction($request)
+    public function searchAction($ip)
     {
 
         // проверка подключения модуля
         if(!Loader::includeModule("highloadblock")) {
-            $this->logErrors($request, 'Не подключен модуль highloadblock');
+            $this->logErrors($ip, 'Не подключен модуль highloadblock');
             return;    
         }
 
         // валидация ip адреса
-        $ip = filter_var($request, FILTER_VALIDATE_IP);
+        $requestIp = $ip;
+        $ip = filter_var($requestIp, FILTER_VALIDATE_IP);
         if (empty($ip)) {
-            $this->logErrors($request, 'Не валидный IP адрес');
+            $this->logErrors($ip, 'Не валидный IP адрес');
             return;
         }
 
