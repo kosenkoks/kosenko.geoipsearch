@@ -1,14 +1,14 @@
-<? if (!defined('B_PROLOG_INCLUDED') || B_PROLOG_INCLUDED !== true)
+<?php if (!defined('B_PROLOG_INCLUDED') || B_PROLOG_INCLUDED !== true)
     die();
 
-use Bitrix\Main\Engine\Contract\Controllerable;
-use Bitrix\Main\Web\HttpClient;
-use Bitrix\Main\Loader;
 use Bitrix\Highloadblock\HighloadBlockTable as HLtable;
+use Bitrix\Main\Engine\Contract\Controllerable;
 use Bitrix\Main\Error;
-use Bitrix\Main\ErrorCollection;
 use Bitrix\Main\Errorable;
+use Bitrix\Main\ErrorCollection;
+use Bitrix\Main\Loader;
 use Bitrix\Main\Mail\Event;
+use Bitrix\Main\Web\HttpClient;
 
 class GeoIPSearch extends CBitrixComponent implements Controllerable, Errorable
 {
@@ -32,36 +32,52 @@ class GeoIPSearch extends CBitrixComponent implements Controllerable, Errorable
         return [];
     }
 
+    /**
+     *
+     * AJAX событие search, реализует получение геоинформации по IP адресу
+     *
+     * @param $request
+     * @return mixed|void
+     */
     public function searchAction($request)
     {
+
+        // проверка подключения модуля
         if(!Loader::includeModule("highloadblock")) {
-            $this->logErrors($ip, 'Не подключен модуль highloadblock');
+            $this->logErrors($request, 'Не подключен модуль highloadblock');
             return;    
         }
-        
+
+        // валидация ip адреса
         $ip = filter_var($request, FILTER_VALIDATE_IP);
         if (empty($ip)) {
             $this->logErrors($request, 'Не валидный IP адрес');
             return;
         }
 
+        // поиск нужнога HL блока
         $rsgeoipHlblock = HLtable::getList(array('filter' => array('NAME' => self::HLBLOCK_NAME)));
         if (!($geoipHlblock = $rsgeoipHlblock->fetch())) {
             $this->logErrors($ip, 'HL блок '.self::HLBLOCK_NAME.' не найден');
             return;
         }
 
+        // получение информации из HL блока
         $geoipHlclass = HLtable::compileEntity($geoipHlblock)->getDataClass();
         $rsIpData = $geoipHlclass::getList([
             "select" => ['UF_JSON'],
             "filter" => ["UF_IP_ADRESS" => $ip]
         ]);
+
+        // если информация найдена, то возращаем её
         if($arIpData = $rsIpData->fetch()){
             return json_decode($arIpData['UF_JSON']);
-        } else {
+        }
+        // если по ip не найдено записи, то делаем запрос по API и записываем результат в HL блок
+        else {
             $client = new HttpClient();
             $response = $client->get(self::API_URL . $ip);
-            if($response == false) {
+            if(!$response) {
                 $this->logErrors($ip, 'Не получен ответ от API');
                 return;
             }

@@ -1,4 +1,4 @@
-<? if (!defined('B_PROLOG_INCLUDED') || B_PROLOG_INCLUDED !== true)
+<?php if (!defined('B_PROLOG_INCLUDED') || B_PROLOG_INCLUDED !== true)
     die();
 
 use Bitrix\Main\Localization\Loc;
@@ -14,11 +14,8 @@ Extension::load('ui.bootstrap4');
 
 $messages = Loc::loadLanguageFile(__FILE__);
 
-
-
 ?>
-<script src="https://api-maps.yandex.ru/2.1/?apikey=e95f8762-4d63-49c0-94d2-bb06804ddd4e&lang=ru_RU" type="text/javascript">
-    </script>
+<script src="https://api-maps.yandex.ru/2.1/?apikey=e95f8762-4d63-49c0-94d2-bb06804ddd4e&lang=ru_RU" type="text/javascript"></script>
 <div class="container gy-2">
     <div class="row ">
         <div class="col-md-4">
@@ -70,22 +67,4 @@ $messages = Loc::loadLanguageFile(__FILE__);
     BX.message(<?= CUtil::PhpToJSObject($messages) ?>);
 </script>
 
-<script type="text/javascript">
-    // Функция ymaps.ready() будет вызвана, когда
-    // загрузятся все компоненты API, а также когда будет готово DOM-дерево.
-    ymaps.ready(init);
-    function init(){
-        console.log('яндекс');
-        // Создание карты.
-        var myMap = new ymaps.Map("map", {
-            // Координаты центра карты.
-            // Порядок по умолчанию: «широта, долгота».
-            // Чтобы не определять координаты центра карты вручную,
-            // воспользуйтесь инструментом Определение координат.
-            center: [55.76, 37.64],
-            // Уровень масштабирования. Допустимые значения:
-            // от 0 (весь мир) до 19.
-            zoom: 7
-        });
-    }
-</script>
+
